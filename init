@@ -1,0 +1,8 @@
+#!/bin/bash
+echo -e "Hello $(whoami) \nStarted Docker commands!"
+docker compose down
+docker compose build
+docker compose up -d
+# docker compose exec -d vtpass_core /bin/bash -c "php artisan queue:work vtpass_redis"
+# docker compose exec -d vtpass_core /bin/bash -c "nohup php artisan queue:work --daemon &"
+echo -e "Executed Successfully!"
