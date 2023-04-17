@@ -10,10 +10,5 @@ RUN apt-get -y update && apt-get -y install net-tools
 # Copy the Nginx config
 COPY default.conf /etc/nginx/default.conf
 
-# Expose the port for access
-# EXPOSE 80/tcp
-
 # Run the Nginx server
 CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
-# RUN sudo setsebool httpd_can_network_connect on -P
-# CMD ["/usr/sbin/setsebool", "httpd_can_network_connect", "1"]

@@ -1,0 +1,5 @@
+{
+    "require": {
+        "mateusjunges/laravel-kafka": "^1.13"
+    }
+}

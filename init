@@ -3,6 +3,21 @@ echo -e "Hello $(whoami) \nStarted Docker commands!"
 docker compose down
 docker compose build
 docker compose up -d
-# docker compose exec -d vtpass_core /bin/bash -c "php artisan queue:work vtpass_redis"
-# docker compose exec -d vtpass_core /bin/bash -c "nohup php artisan queue:work --daemon &"
+
+echo "Waiting for database connection..."
+sleep 5
+echo "Waiting for database connection..."
+sleep 5
+echo "Waiting for database connection..."
+sleep 5
+echo "Waiting for database connection..."
+sleep 5
+until docker exec mysql sh -cs 'mysql -u root -e ";"'
+do
+  docker exec mysql sh -c "mysql -u root -e 'create database assessment\G'" 
+  docker exec laravel sh -c "php artisan migrate:fresh --seed"
+  docker exec laravel sh -c "./kafka.sh"
+done
 echo -e "Executed Successfully!"
+rundll32 url.dll,FileProtocolHandler "http://localhost:7711"
+open "http://localhost:7711"

@@ -9,54 +9,73 @@ services:
 
   kafka:
     image: wurstmeister/kafka
+    container_name: kafka
     ports:
       - "9092:9092"
     environment:
-      KAFKA_ADVERTISED_HOSTNAME: localhost
-      KAFKA_ZOOKER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   laravel:
-    build: 
+    build:
       context: ./src/app
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     container_name: laravel
     restart: unless-stopped
     working_dir: /var/www/app
     depends_on:
-        - mysql
-        - kafka
+      - mysql
     volumes:
-        - ./src/app:/var/www/app
+      - ./src/app:/var/www/app
     networks:
-        - assessment
-      
+      - assessment
+
   mysql:
     image: bitnami/mysql:8.0.20
     container_name: mysql
     restart: unless-stopped
     ports:
-        - 3306:3306
+      - 3306:3306
     environment:
-        ALLOW_EMPTY_PASSWORD: yes
-        MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+      ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
     volumes:
-        - ./mysql:/bitnami/mysql/data
+      - ./mysql:/bitnami/mysql/data
     networks:
-        - assessment
-
+      - assessment
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8090:80"
+    environment:
+      # PMA_ARBITRARY: 1
+      PMA_HOST: mysql
+      UPLOAD_LIMIT: 300M
+    networks:
+      - assessment
   nginx:
     depends_on:
       - laravel
-    build: 
+    build:
       context: ./nginx
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
+    container_name: nginx
+    restart: unless-stopped
     ports:
-      - "9000:90"
+      - "7711:11"
     volumes:
-      - ./src:/var/www
+      # - ./src/vtpass:/var/www/vtpass
+      - ./src:/var/www/
+      - ./nginx:/etc/nginx/conf.d/
     networks:
       - assessment
-      
+
 networks:
   assessment:
     driver: bridge

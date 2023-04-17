@@ -1,0 +1,8 @@
+.idea
+/App/Http/Middleware
+vendor/
+vendor
+.env
+*.DS_Store
+.DS_Store
+node_modules/
